@@ -1,52 +1,51 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Register = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [mobile, setMobile] = useState('');
-    const [message, setMessage] = useState('');
+const Register = ({ setPage }) => {
+  const [mobile, setMobile] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('https://anotech-updated-project-1.onrender.com/register', {
-                password,
-                mobile
-            });
-            setMessage('Registration successful!');
-        } catch (error) {
-            setMessage('Registration failed. Please try again.');
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    try {
+      await axios.post('https://backend-service-12.onrender.com/register', { mobile, password }, { withCredentials: true });
+      setPage('login');
+    } catch (error) {
+      console.error('Error registering', error);
+      setError('An error occurred during registration. Please try again.');
+    }
+  };
 
-    return (
-        <div>
-            <h2>Register</h2>
-            <form onSubmit={handleRegister}>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Mobile Number:</label>
-                    <input
-                        type="text"
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Register</button>
-            </form>
-            {message && <p>{message}</p>}
-        </div>
-    );
+  return (
+    <div>
+      <h2>Register</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <input 
+          type="text" 
+          placeholder="Mobile Number" 
+          value={mobile} 
+          onChange={(e) => setMobile(e.target.value)} 
+          required 
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          required 
+        />
+        <button type="submit">Register</button>
+      </form>
+      <div>
+        <p>Already have an account?</p>
+        <button onClick={() => setPage('login')}>Login</button>
+      </div>
+    </div>
+  );
 };
 
 export default Register;
